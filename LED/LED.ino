@@ -4,7 +4,7 @@
 //LED
 #define DATAPIN    4
 #define CLOCKPIN   5
-#define NUMPIXELS 90 // Number of LEDs in strip
+#define NUMPIXELS 75 // Number of LEDs in strip
 Adafruit_DotStar strip(NUMPIXELS, DATAPIN, CLOCKPIN, DOTSTAR_BRG);
 int      head  = 0, tail = 0, lasthead = 0,lasttail = 0,on = 0, off = -10; // Index of first 'on' and 'off' pixels
 uint32_t color = 0xFF0000;      // 'On' color (starts red)
@@ -16,7 +16,7 @@ int currentInfraredValue = 0;
 int infraredValue = 0;
 
 unsigned long lastDebounceTime = 0;  
-unsigned long debounceDelay = 1000;
+unsigned long debounceDelay = 500;
 
 bool ledStart = false;
 bool reset = false;
@@ -36,22 +36,22 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-//  lastInfraredValue = currentInfraredValue;
-//  currentInfraredValue = infraredValue;
+  lastInfraredValue = currentInfraredValue;
+  currentInfraredValue = infraredValue;
   infraredValue = digitalRead(infraredPin);
-  Serial.print("infraredValue: ");
-  Serial.println(infraredValue);
+//  Serial.print("infraredValue: ");
+//  Serial.println(infraredValue);
 
-//   if(lastInfraredValue!=currentInfraredValue){
-//    Serial.print("currentInfraredValue = ");
-//    Serial.println(currentInfraredValue);
-//    if(currentInfraredValue == 0){
-      if(infraredValue == 0){
+   if(lastInfraredValue!=currentInfraredValue){
+    Serial.print("currentInfraredValue = ");
+    Serial.println(currentInfraredValue);
+    if(currentInfraredValue == 0){
+//      if(infraredValue == 0){
       ledStart  = true;
       Serial.println("START!");
       lastDebounceTime = millis();
     }
-//  }
+  }
 
   if(ledStart){
       lights(lightSpeed);

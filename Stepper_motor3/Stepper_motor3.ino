@@ -9,8 +9,12 @@ int PotentiometerValue = 0;
 int lastInfraredValue = 0;
 int currentInfraredValue = 0;
 int infraredValue = 0;
-int maxVelocity = 1000;
+int maxPenguinAcc = 250;
 
+int penguinPos = 800;
+int resetPos = 0;
+
+unsigned long timebreak = 800;
 unsigned long lastDebounceTime = 0;  
 unsigned long debounceDelay = 1000;
 
@@ -25,7 +29,7 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
   PotentiometerValue = analogRead(potentiometerPin);
-  int moterAcc = map(PotentiometerValue,0,1023,0,maxVelocity);
+  int moterAcc = map(PotentiometerValue,0,1023,0,maxPenguinAcc);
   //Serial.println(moterAcc);
   lastInfraredValue = currentInfraredValue;
   currentInfraredValue = infraredValue;
@@ -42,31 +46,27 @@ void loop() {
   }
 
   if(motorStart){
-    motorMove(moterAcc);
+    motorMove(moterAcc,penguinPos);
     }
   else{
-     stepper.stop();
-  //   Serial.println("END!");
+      stepper.setMaxSpeed(500.0);
+      stepper.setAcceleration(moterAcc);
+      stepper.runToNewPosition(resetPos);
     }
- 
-
 }
 
-void motorMove(int acc){
+void motorMove(int acc,int pos){
  // Serial.println("START!");
-  stepper.setMaxSpeed(1000);
-  stepper.setSpeed(acc);
-  //stepper.runToNewPosition(500);
-  //stepper.moveTo(500);
-  stepper.run();
-  if((millis() - lastDebounceTime) > debounceDelay){
+  stepper.setMaxSpeed(500);
+  stepper.setAcceleration(acc);
+  stepper.runToNewPosition(pos);
+//  if((millis() - lastDebounceTime) > debounceDelay){
+     if (stepper.distanceToGo() == 0)
+    {
     motorStart = false;
     Serial.println("END!");
+    delay(timebreak);
     }
-  
- // if (stepper.distanceToGo() == 0){
-   // motorStart = false;
- //   Serial.println("motorStart: false");
-    //}
   }
+
 
